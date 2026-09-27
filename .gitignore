@@ -6,6 +6,11 @@ dist/
 product/frontend/dist/
 product/backend/*/target/
 
+# The front end compiles into the gateway's static resources, so that folder is
+# generated output. The Dockerfile rebuilds it from source, and committing it
+# would dirty the repository on every local build.
+product/backend/api-gateway/src/main/resources/static/
+
 # logs and temp files
 *.log
 logs/
