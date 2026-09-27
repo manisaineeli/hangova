@@ -13,6 +13,11 @@ presentation specifies, on the exact stack it lists.
 
 | | |
 |---|---|
+**Live:** presentation at <https://manisaineeli.github.io/hangova> ·
+source at <https://github.com/manisaineeli/hangova>
+
+| | |
+|---|---|
 | **Front end** | React 19 + Vite, `product/frontend` |
 | **Edge** | Spring Cloud Gateway, `product/backend/api-gateway` |
 | **Backend** | Java 25 + Spring Boot 4.0.8, four microservices |
@@ -40,7 +45,65 @@ another's collections.
 
 ---
 
-## Running it
+## Public access
+
+Two different things can be shared, and they work differently.
+
+### 1. The presentation (already live)
+
+**https://manisaineeli.github.io/hangova**
+
+Static, hosted on GitHub Pages, published from the `gh-pages` branch. To
+republish after changing `src/`:
+
+```bat
+publish-presentation.cmd
+```
+
+### 2. The application (needs a running host)
+
+The app is a Spring Boot + MongoDB system, so a static host cannot run it. The
+gateway serves the React bundle *and* the API on a single port, which is what
+makes a one-URL deploy possible.
+
+**Permanent, recommended — Render Blueprint.** `render.yaml` describes the whole
+stack: the gateway, the three internal services and a free MongoDB.
+
+1. Sign in at <https://render.com> with the GitHub account `manisaineeli`
+2. Open <https://render.com/deploy?repo=https://github.com/manisaineeli/hangova>
+3. Accept the plan. Five services plus a database are created.
+4. Render prints a URL like `https://hangova.onrender.com` — that is the link to
+   share.
+
+Add `HANGOVA_GEMINI_API_KEY` on the `hangova-trip` service to enable AI-written
+itineraries. Two caveats worth knowing before you demo: the free tier **sleeps
+idle services**, so the first request after a pause can take up to a minute;
+and free MongoDB **expires after 30 days**, after which data resets but the URL
+keeps working. Set a real `HANGOVA_JWT_SECRET` on `hangova-user` and
+`hangova` before exposing it.
+
+**Temporary, for a quick demo — local tunnel.** With the stack running
+locally:
+
+```bat
+public-link.cmd
+```
+
+This prints a `*.trycloudflare.com` URL that works while the tunnel and your
+machine are both up. It is fine for a walkthrough and is **not** a permanent
+address. Note that Cloudflare's anti-bot layer returns 403 to automated and
+headless browsers, so a plain `curl` succeeds while a scripted browser does
+not; open it in a normal browser.
+
+#### Before you share any link
+
+The seeded accounts are `admin@hangova.ai / admin123` and
+`demo@hangova.ai / demo123`, and the JWT secret defaults to a value that is in
+the public repository. On a public URL, change the admin password (Profile →
+Password) and set a real `HANGOVA_JWT_SECRET` first. Anyone who can reach the
+site can otherwise sign in as an administrator.
+
+## Running it locally
 
 Prerequisites: **Java 25**, **Node 24**, **MongoDB** on `localhost:27017`.
 Maven is not required to be installed — a copy lives in
