@@ -31,7 +31,7 @@ services:
       - key: SERVER_PORT
         value: "8081"
       - key: HANGOVA_MONGO_URI
-        sync: false
+        value: "mongodb+srv://lexurisachs_db_user:<db_password>@m0.mlq0l6n.mongodb.net/"
       - key: HANGOVA_JWT_SECRET
         generateValue: true
       - key: HANGOVA_JWT_ISSUER
@@ -49,7 +49,7 @@ services:
       - key: SERVER_PORT
         value: "8082"
       - key: HANGOVA_MONGO_URI
-        sync: false
+        value: "mongodb+srv://lexurisachs_db_user:<db_password>@m0.mlq0l6n.mongodb.net/hangova_trips"
       - key: HANGOVA_GEMINI_API_KEY
         sync: false
       - key: HANGOVA_GEMINI_MODEL
@@ -67,7 +67,7 @@ services:
       - key: SERVER_PORT
         value: "8083"
       - key: HANGOVA_BOOKING_MONGO_URI
-        sync: false
+        value: "mongodb+srv://lexurisachs_db_user:<db_password>@m0.mlq0l6n.mongodb.net/hangova_bookings"
       - key: HANGOVA_TRIP_URL
         fromService: { name: hangova-trip, type: web, property: hostport }
       - key: HANGOVA_JWT_SECRET
@@ -85,7 +85,7 @@ services:
       - key: SERVER_PORT
         value: "8084"
       - key: HANGOVA_INFO_MONGO_URI
-        sync: false
+        value: "mongodb+srv://lexurisachs_db_user:<db_password>@m0.mlq0l6n.mongodb.net/hangova_info"
       - key: HANGOVA_TRIP_URL
         fromService: { name: hangova-trip, type: web, property: hostport }
       - key: HANGOVA_BOOKING_URL
