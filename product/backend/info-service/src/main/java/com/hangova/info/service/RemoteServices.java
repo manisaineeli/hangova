@@ -31,8 +31,20 @@ public class RemoteServices {
                           @Value("${hangova.services.trip:http://localhost:8082}") String tripUrl,
                           @Value("${hangova.services.booking:http://localhost:8083}") String bookingUrl) {
         this.http = builder.build();
-        this.tripUrl = tripUrl;
-        this.bookingUrl = bookingUrl;
+        this.tripUrl = withScheme(tripUrl);
+        this.bookingUrl = withScheme(bookingUrl);
+    }
+
+    /**
+     * Render supplies internal addresses as "host:port" with no scheme, which
+     * RestClient will not accept, so the scheme is filled in here.
+     */
+    private static String withScheme(String url) {
+        if (url == null || url.isBlank()) {
+            return url;
+        }
+        String v = url.trim();
+        return (v.startsWith("http://") || v.startsWith("https://")) ? v : "http://" + v;
     }
 
     /** Trip as returned by the Trip Service. */

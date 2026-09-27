@@ -37,7 +37,7 @@ COPY --from=backend /src/api-gateway/target/api-gateway.jar /app/api-gateway.jar
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75 -XX:+UseSerialGC"
 EXPOSE 8080
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-  CMD ["sh", "-c", "curl -fsS http://localhost:8080/actuator/health || exit 1"]
-
+# No HEALTHCHECK here on purpose: the temurin JRE image has no curl, so a
+# curl-based check would always fail. Render performs its own probe against
+# healthCheckPath from render.yaml, which talks HTTP to the running service.
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/api-gateway.jar"]

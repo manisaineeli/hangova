@@ -26,10 +26,29 @@ public class RouteConfig {
             @Value("${hangova.services.trip:http://localhost:8082}") String tripUrl,
             @Value("${hangova.services.booking:http://localhost:8083}") String bookingUrl,
             @Value("${hangova.services.info:http://localhost:8084}") String infoUrl) {
-        this.userUrl = userUrl;
-        this.tripUrl = tripUrl;
-        this.bookingUrl = bookingUrl;
-        this.infoUrl = infoUrl;
+        this.userUrl = normalise(userUrl);
+        this.tripUrl = normalise(tripUrl);
+        this.bookingUrl = normalise(bookingUrl);
+        this.infoUrl = normalise(infoUrl);
+    }
+
+    /**
+     * Accepts a bare host or host:port as well as a full URL.
+     *
+     * Render injects internal addresses in the form "host:port" with no scheme,
+     * and Spring Cloud Gateway rejects a URI without one, so the scheme is
+     * added here rather than forcing every deployment to embed it.
+     */
+    private static String normalise(String url) {
+        if (url == null || url.isBlank()) {
+            return url;
+        }
+        String v = url.trim();
+        if (v.startsWith("http://") || v.startsWith("https://")) {
+            return v;
+        }
+        // a bare host or host:port is a plain HTTP service on the private network
+        return "http://" + v;
     }
 
     @Bean

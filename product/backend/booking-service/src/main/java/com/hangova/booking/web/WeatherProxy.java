@@ -27,7 +27,19 @@ public class WeatherProxy {
     public WeatherProxy(RestClient.Builder builder,
                         @Value("${hangova.services.trip:http://localhost:8082}") String tripServiceUrl) {
         this.http = builder.build();
-        this.tripServiceUrl = tripServiceUrl;
+        this.tripServiceUrl = withScheme(tripServiceUrl);
+    }
+
+    /**
+     * Render supplies internal addresses as "host:port" with no scheme, which
+     * RestClient will not accept, so the scheme is filled in here.
+     */
+    private static String withScheme(String url) {
+        if (url == null || url.isBlank()) {
+            return url;
+        }
+        String v = url.trim();
+        return (v.startsWith("http://") || v.startsWith("https://")) ? v : "http://" + v;
     }
 
     /**

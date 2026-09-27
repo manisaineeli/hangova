@@ -11,10 +11,12 @@
 # which point the data resets and the URL keeps working.
 
 databases:
+  # A new Render database is reachable from services in the same project by
+  # default and from nowhere else, which is exactly what this needs. The
+  # connection string is injected per service below, never committed.
   - name: hangova-db
     databaseName: hangova
     plan: free
-    ipAllowList: []          # only reachable from inside Render
 
 services:
   # ---- Module 1: User & Admin -------------------------------------------
@@ -67,7 +69,7 @@ services:
       - key: SPRING_DATA_MONGODB_URI
         fromDatabase: { name: hangova-db, property: connectionString }
       - key: HANGOVA_TRIP_URL
-        fromService: { name: hangova-trip, type: web, property: host }
+        fromService: { name: hangova-trip, type: web, property: hostport }
       - key: HANGOVA_JWT_SECRET
         fromService: { name: hangova-user, type: web, envVarKey: HANGOVA_JWT_SECRET }
 
@@ -85,9 +87,9 @@ services:
       - key: SPRING_DATA_MONGODB_URI
         fromDatabase: { name: hangova-db, property: connectionString }
       - key: HANGOVA_TRIP_URL
-        fromService: { name: hangova-trip, type: web, property: host }
+        fromService: { name: hangova-trip, type: web, property: hostport }
       - key: HANGOVA_BOOKING_URL
-        fromService: { name: hangova-booking, type: web, property: host }
+        fromService: { name: hangova-booking, type: web, property: hostport }
       - key: HANGOVA_JWT_SECRET
         fromService: { name: hangova-user, type: web, envVarKey: HANGOVA_JWT_SECRET }
 
@@ -107,10 +109,10 @@ services:
       - key: HANGOVA_JWT_ISSUER
         value: hangova
       - key: HANGOVA_USER_URL
-        fromService: { name: hangova-user, type: web, property: host }
+        fromService: { name: hangova-user, type: web, property: hostport }
       - key: HANGOVA_TRIP_URL
-        fromService: { name: hangova-trip, type: web, property: host }
+        fromService: { name: hangova-trip, type: web, property: hostport }
       - key: HANGOVA_BOOKING_URL
-        fromService: { name: hangova-booking, type: web, property: host }
+        fromService: { name: hangova-booking, type: web, property: hostport }
       - key: HANGOVA_INFO_URL
-        fromService: { name: hangova-info, type: web, property: host }
+        fromService: { name: hangova-info, type: web, property: hostport }
