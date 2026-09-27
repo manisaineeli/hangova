@@ -75,15 +75,15 @@ export default function App() {
 
       <main className={ready ? 'ready' : ''}>
         <Hero draft={draft} setDraft={setDraft} activeTemplate={hoverTpl ?? activeTpl} />
-        <Templates onPick={pickTemplate} activeId={(hoverTpl ?? activeTpl)?.id} />
-        <Problem />
-        <Solution />
+        <Places onPick={pickTemplate} activeId={(hoverTpl ?? activeTpl)?.id} />
+        <Why />
+        <Capabilities />
         <Compare />
         <Modules activeModuleRef={activeModuleRef} />
         <Architecture />
-        <Stack />
+        <Tech />
         <Team />
-        <Outcomes />
+        <Results />
       </main>
 
       <Footer brand={meta.name} />
