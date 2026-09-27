@@ -17,6 +17,7 @@ databases:
   - name: hangova-db
     databaseName: hangova
     plan: free
+    type: mongodb
 
 services:
   # ---- Module 1: User & Admin -------------------------------------------
@@ -30,7 +31,7 @@ services:
     envVars:
       - key: SERVER_PORT
         value: "8081"
-      - key: SPRING_DATA_MONGODB_URI
+      - key: HANGOVA_MONGO_URI
         fromDatabase: { name: hangova-db, property: connectionString }
       - key: HANGOVA_JWT_SECRET
         generateValue: true
@@ -48,7 +49,7 @@ services:
     envVars:
       - key: SERVER_PORT
         value: "8082"
-      - key: SPRING_DATA_MONGODB_URI
+      - key: HANGOVA_MONGO_URI
         fromDatabase: { name: hangova-db, property: connectionString }
       - key: HANGOVA_GEMINI_API_KEY
         sync: false
@@ -66,7 +67,7 @@ services:
     envVars:
       - key: SERVER_PORT
         value: "8083"
-      - key: SPRING_DATA_MONGODB_URI
+      - key: HANGOVA_BOOKING_MONGO_URI
         fromDatabase: { name: hangova-db, property: connectionString }
       - key: HANGOVA_TRIP_URL
         fromService: { name: hangova-trip, type: web, property: hostport }
@@ -84,7 +85,7 @@ services:
     envVars:
       - key: SERVER_PORT
         value: "8084"
-      - key: SPRING_DATA_MONGODB_URI
+      - key: HANGOVA_INFO_MONGO_URI
         fromDatabase: { name: hangova-db, property: connectionString }
       - key: HANGOVA_TRIP_URL
         fromService: { name: hangova-trip, type: web, property: hostport }
