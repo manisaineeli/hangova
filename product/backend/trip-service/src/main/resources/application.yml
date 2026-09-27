@@ -1,0 +1,37 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: trip-service
+  data:
+    mongodb:
+      uri: ${HANGOVA_MONGO_URI:mongodb://localhost:27017/hangova_trips}
+      auto-index-creation: true
+  jackson:
+    default-property-inclusion: non_null
+
+hangova:
+  # ---- Google Gemini (Module 2 AI) ----
+  # Leave the key blank to use the built-in rule-based planner instead.
+  gemini:
+    api-key: ${HANGOVA_GEMINI_API_KEY:}
+    model: ${HANGOVA_GEMINI_MODEL:gemini-2.0-flash}
+  # ---- Live travel data (no API key needed for either) ----
+  weather:
+    enabled: ${HANGOVA_WEATHER_ENABLED:true}
+  geocoding:
+    enabled: ${HANGOVA_GEOCODING_ENABLED:true}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.hangova: INFO

@@ -1,0 +1,30 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: booking-service
+  data:
+    mongodb:
+      uri: ${HANGOVA_BOOKING_MONGO_URI:mongodb://localhost:27017/hangova_bookings}
+      auto-index-creation: true
+  jackson:
+    default-property-inclusion: non_null
+
+hangova:
+  services:
+    # used by the weather proxy, so booking screens can show the forecast
+    trip: ${HANGOVA_TRIP_URL:http://localhost:8082}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.hangova: INFO

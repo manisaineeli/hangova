@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+hangova:
+  jwt:
+    # must match the secret configured on user-service
+    secret: ${HANGOVA_JWT_SECRET:hangova-review1-dev-secret-key-change-me-please-32b}
+    issuer: ${HANGOVA_JWT_ISSUER:hangova}
+  services:
+    user: ${HANGOVA_USER_URL:http://localhost:8081}
+    trip: ${HANGOVA_TRIP_URL:http://localhost:8082}
+    booking: ${HANGOVA_BOOKING_URL:http://localhost:8083}
+    info: ${HANGOVA_INFO_URL:http://localhost:8084}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,gateway"
+  endpoint:
+    gateway:
+      enabled: true
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.hangova: INFO

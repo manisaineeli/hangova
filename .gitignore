@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+product/frontend/dist/
+product/backend/*/target/
+
+# logs and temp files
+*.log
+logs/
+*.tmp
+
+# local configuration and secrets (never commit these)
+.env
+.env.*
+!.env.example
+
+# tooling binaries downloaded locally
+product/cloudflared.exe
+product/cloudflared
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml

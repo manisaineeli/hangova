@@ -1,0 +1,31 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: user-service
+  data:
+    mongodb:
+      uri: ${HANGOVA_MONGO_URI:mongodb://localhost:27017/hangova_users}
+      auto-index-creation: true
+  jackson:
+    default-property-inclusion: non_null
+
+hangova:
+  jwt:
+    secret: ${HANGOVA_JWT_SECRET:hangova-review1-dev-secret-key-change-me-please-32b}
+    issuer: ${HANGOVA_JWT_ISSUER:hangova}
+    ttl-hours: ${HANGOVA_JWT_TTL_HOURS:12}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.hangova: INFO

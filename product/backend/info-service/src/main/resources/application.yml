@@ -1,0 +1,31 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: info-service
+  data:
+    mongodb:
+      uri: ${HANGOVA_INFO_MONGO_URI:mongodb://localhost:27017/hangova_info}
+      auto-index-creation: true
+  jackson:
+    default-property-inclusion: non_null
+
+hangova:
+  services:
+    # this module aggregates the trips and bookings owned by the other services
+    trip: ${HANGOVA_TRIP_URL:http://localhost:8082}
+    booking: ${HANGOVA_BOOKING_URL:http://localhost:8083}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.hangova: INFO
