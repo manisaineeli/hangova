@@ -1,0 +1,116 @@
+# Render Blueprint - one click deploy.
+#
+# Render runs the public gateway, which serves the React bundle and proxies the
+# API to the three internal services. A free MongoDB is supplied so the whole
+# stack comes up without a paid dependency.
+#
+# Deploy: https://render.com/deploy?repo=https://github.com/manisaineeli/hangova
+#
+# NOTE: Render's free tier sleeps idle services, so the first request after an
+# idle period can take up to a minute. The free Mongo expires after 30 days, at
+# which point the data resets and the URL keeps working.
+
+databases:
+  - name: hangova-db
+    databaseName: hangova
+    plan: free
+    ipAllowList: []          # only reachable from inside Render
+
+services:
+  # ---- Module 1: User & Admin -------------------------------------------
+  - type: web
+    name: hangova-user
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SERVER_PORT
+        value: "8081"
+      - key: SPRING_DATA_MONGODB_URI
+        fromDatabase: { name: hangova-db, property: connectionString }
+      - key: HANGOVA_JWT_SECRET
+        generateValue: true
+      - key: HANGOVA_JWT_ISSUER
+        value: hangova
+
+  # ---- Module 2: AI Trip Planning ---------------------------------------
+  - type: web
+    name: hangova-trip
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SERVER_PORT
+        value: "8082"
+      - key: SPRING_DATA_MONGODB_URI
+        fromDatabase: { name: hangova-db, property: connectionString }
+      - key: HANGOVA_GEMINI_API_KEY
+        sync: false
+      - key: HANGOVA_GEMINI_MODEL
+        value: gemini-2.0-flash
+
+  # ---- Module 3: Borrow & Booking --------------------------------------
+  - type: web
+    name: hangova-booking
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SERVER_PORT
+        value: "8083"
+      - key: SPRING_DATA_MONGODB_URI
+        fromDatabase: { name: hangova-db, property: connectionString }
+      - key: HANGOVA_TRIP_URL
+        fromService: { name: hangova-trip, type: web, property: host }
+      - key: HANGOVA_JWT_SECRET
+        fromService: { name: hangova-user, type: web, envVarKey: HANGOVA_JWT_SECRET }
+
+  # ---- Module 4: Travel Information -------------------------------------
+  - type: web
+    name: hangova-info
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SERVER_PORT
+        value: "8084"
+      - key: SPRING_DATA_MONGODB_URI
+        fromDatabase: { name: hangova-db, property: connectionString }
+      - key: HANGOVA_TRIP_URL
+        fromService: { name: hangova-trip, type: web, property: host }
+      - key: HANGOVA_BOOKING_URL
+        fromService: { name: hangova-booking, type: web, property: host }
+      - key: HANGOVA_JWT_SECRET
+        fromService: { name: hangova-user, type: web, envVarKey: HANGOVA_JWT_SECRET }
+
+  # ---- Edge: API Gateway + the React bundle on one public URL -----------
+  - type: web
+    name: hangova
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SERVER_PORT
+        value: "8080"
+      - key: HANGOVA_JWT_SECRET
+        fromService: { name: hangova-user, type: web, envVarKey: HANGOVA_JWT_SECRET }
+      - key: HANGOVA_JWT_ISSUER
+        value: hangova
+      - key: HANGOVA_USER_URL
+        fromService: { name: hangova-user, type: web, property: host }
+      - key: HANGOVA_TRIP_URL
+        fromService: { name: hangova-trip, type: web, property: host }
+      - key: HANGOVA_BOOKING_URL
+        fromService: { name: hangova-booking, type: web, property: host }
+      - key: HANGOVA_INFO_URL
+        fromService: { name: hangova-info, type: web, property: host }
