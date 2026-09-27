@@ -1,23 +1,22 @@
 # Render Blueprint - one click deploy.
 #
 # Render runs the public gateway, which serves the React bundle and proxies the
-# API to the three internal services. A free MongoDB is supplied so the whole
-# stack comes up without a paid dependency.
+# API to the three internal services.
 #
 # Deploy: https://render.com/deploy?repo=https://github.com/manisaineeli/hangova
 #
 # NOTE: Render's free tier sleeps idle services, so the first request after an
-# idle period can take up to a minute. The free Mongo expires after 30 days, at
-# which point the data resets and the URL keeps working.
+# idle period can take up to a minute.
+#
+# IMPORTANT: Render free tier only supports PostgreSQL natively. MongoDB must
+# be provided externally via MongoDB Atlas (free M0 tier). After deploying,
+# set the HANGOVA_MONGO_URI, HANGOVA_BOOKING_MONGO_URI, and HANGOVA_INFO_MONGO_URI
+# environment variables on each service with your MongoDB Atlas connection string.
 
 databases:
-  # A new Render database is reachable from services in the same project by
-  # default and from nowhere else, which is exactly what this needs. The
-  # connection string is injected per service below, never committed.
   - name: hangova-db
     databaseName: hangova
     plan: free
-    type: mongodb
 
 services:
   # ---- Module 1: User & Admin -------------------------------------------
@@ -32,7 +31,7 @@ services:
       - key: SERVER_PORT
         value: "8081"
       - key: HANGOVA_MONGO_URI
-        fromDatabase: { name: hangova-db, property: connectionString }
+        sync: false
       - key: HANGOVA_JWT_SECRET
         generateValue: true
       - key: HANGOVA_JWT_ISSUER
@@ -50,7 +49,7 @@ services:
       - key: SERVER_PORT
         value: "8082"
       - key: HANGOVA_MONGO_URI
-        fromDatabase: { name: hangova-db, property: connectionString }
+        sync: false
       - key: HANGOVA_GEMINI_API_KEY
         sync: false
       - key: HANGOVA_GEMINI_MODEL
@@ -68,7 +67,7 @@ services:
       - key: SERVER_PORT
         value: "8083"
       - key: HANGOVA_BOOKING_MONGO_URI
-        fromDatabase: { name: hangova-db, property: connectionString }
+        sync: false
       - key: HANGOVA_TRIP_URL
         fromService: { name: hangova-trip, type: web, property: hostport }
       - key: HANGOVA_JWT_SECRET
@@ -86,7 +85,7 @@ services:
       - key: SERVER_PORT
         value: "8084"
       - key: HANGOVA_INFO_MONGO_URI
-        fromDatabase: { name: hangova-db, property: connectionString }
+        sync: false
       - key: HANGOVA_TRIP_URL
         fromService: { name: hangova-trip, type: web, property: hostport }
       - key: HANGOVA_BOOKING_URL
