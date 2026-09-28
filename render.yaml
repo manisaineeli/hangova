@@ -22,9 +22,8 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
-    docker:
-      buildArgs:
-        SERVICE_NAME: user-service
+    buildArgs:
+      SERVICE_NAME: user-service
     envVars:
       - key: SERVER_PORT
         value: "8081"
@@ -43,9 +42,8 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
-    docker:
-      buildArgs:
-        SERVICE_NAME: trip-service
+    buildArgs:
+      SERVICE_NAME: trip-service
     envVars:
       - key: SERVER_PORT
         value: "8082"
@@ -64,9 +62,8 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
-    docker:
-      buildArgs:
-        SERVICE_NAME: booking-service
+    buildArgs:
+      SERVICE_NAME: booking-service
     envVars:
       - key: SERVER_PORT
         value: "8083"
@@ -85,9 +82,8 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
-    docker:
-      buildArgs:
-        SERVICE_NAME: info-service
+    buildArgs:
+      SERVICE_NAME: info-service
     envVars:
       - key: SERVER_PORT
         value: "8084"
@@ -108,9 +104,8 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
-    docker:
-      buildArgs:
-        SERVICE_NAME: api-gateway
+    buildArgs:
+      SERVICE_NAME: api-gateway
     envVars:
       - key: SERVER_PORT
         value: "8080"
