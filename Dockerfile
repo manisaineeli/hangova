@@ -1,11 +1,11 @@
 # Multi-stage build: Node builds the React bundle into the gateway's static
-# resources, then Maven builds all service jars.  A build arg selects which
-# service to run so every Render service shares the same Dockerfile.
+# resources, then Maven builds all service jars.  An environment variable
+# selects which service to run so every Render service shares the same Dockerfile.
 #
-#   docker build --build-arg SERVICE_NAME=api-gateway -t hangova-gw .
-#   docker build --build-arg SERVICE_NAME=user-service -t hangova-user .
-
-ARG SERVICE_NAME=api-gateway
+#   docker build -t hangova-gw .
+#   docker build -t hangova-user .
+#
+# The SERVICE_NAME env var (set per Render service in render.yaml) selects the jar.
 
 # ---- Stage 1: build the React bundle ----------------------------------------
 FROM node:24-alpine AS ui
@@ -41,22 +41,24 @@ RUN mvn -B -q package -DskipTests
 # ---- Stage 3: runtime -------------------------------------------------------
 FROM eclipse-temurin:25-jre-jammy
 
-# re-declare so it's available in this stage
-ARG SERVICE_NAME=api-gateway
-
 WORKDIR /app
 
 # non-root: this container is internet facing
 RUN useradd --system --create-home --uid 10001 hangova
 USER hangova
 
-# copy only the selected service jar
-COPY --from=backend /src/${SERVICE_NAME}/target/${SERVICE_NAME}.jar /app/service.jar
+# copy all service jars; the entrypoint picks the right one
+COPY --from=backend /src/api-gateway/target/api-gateway.jar /app/api-gateway.jar
+COPY --from=backend /src/user-service/target/user-service.jar /app/user-service.jar
+COPY --from=backend /src/trip-service/target/trip-service.jar /app/trip-service.jar
+COPY --from=backend /src/booking-service/target/booking-service.jar /app/booking-service.jar
+COPY --from=backend /src/info-service/target/info-service.jar /app/info-service.jar
 
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75 -XX:+UseSerialGC"
+ENV SERVICE_NAME=api-gateway
 EXPOSE 8080
 
 # No HEALTHCHECK here on purpose: the temurin JRE image has no curl, so a
 # curl-based check would always fail. Render performs its own probe against
 # healthCheckPath from render.yaml, which talks HTTP to the running service.
-ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/service.jar"]
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/${SERVICE_NAME}.jar"]

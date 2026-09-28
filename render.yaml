@@ -22,11 +22,11 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
-    buildArgs:
-      SERVICE_NAME: user-service
     envVars:
       - key: SERVER_PORT
         value: "8081"
+      - key: SERVICE_NAME
+        value: user-service
       - key: HANGOVA_MONGO_URI
         sync: false
       - key: HANGOVA_JWT_SECRET
@@ -42,11 +42,11 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
-    buildArgs:
-      SERVICE_NAME: trip-service
     envVars:
       - key: SERVER_PORT
         value: "8082"
+      - key: SERVICE_NAME
+        value: trip-service
       - key: HANGOVA_MONGO_URI
         sync: false
       - key: HANGOVA_GEMINI_API_KEY
@@ -62,11 +62,11 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
-    buildArgs:
-      SERVICE_NAME: booking-service
     envVars:
       - key: SERVER_PORT
         value: "8083"
+      - key: SERVICE_NAME
+        value: booking-service
       - key: HANGOVA_BOOKING_MONGO_URI
         sync: false
       - key: HANGOVA_TRIP_URL
@@ -82,11 +82,11 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
-    buildArgs:
-      SERVICE_NAME: info-service
     envVars:
       - key: SERVER_PORT
         value: "8084"
+      - key: SERVICE_NAME
+        value: info-service
       - key: HANGOVA_INFO_MONGO_URI
         sync: false
       - key: HANGOVA_TRIP_URL
@@ -104,11 +104,11 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
-    buildArgs:
-      SERVICE_NAME: api-gateway
     envVars:
       - key: SERVER_PORT
         value: "8080"
+      - key: SERVICE_NAME
+        value: api-gateway
       - key: HANGOVA_JWT_SECRET
         fromService: { name: hangova-user, type: web, envVarKey: HANGOVA_JWT_SECRET }
       - key: HANGOVA_JWT_ISSUER
