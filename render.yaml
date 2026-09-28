@@ -1,17 +1,17 @@
 # Render Blueprint - one click deploy.
 #
 # Render runs the public gateway, which serves the React bundle and proxies the
-# API to the three internal services.
+# API to the four internal services.
 #
 # Deploy: https://render.com/deploy?repo=https://github.com/manisaineeli/hangova
 #
 # NOTE: Render's free tier sleeps idle services, so the first request after an
 # idle period can take up to a minute.
 #
-# IMPORTANT: Render free tier only supports PostgreSQL natively. MongoDB must
-# be provided externally via MongoDB Atlas (free M0 tier). After deploying,
-# set the HANGOVA_MONGO_URI, HANGOVA_BOOKING_MONGO_URI, and HANGOVA_INFO_MONGO_URI
-# environment variables on each service with your MongoDB Atlas connection string.
+# MongoDB must be provided externally via MongoDB Atlas (free M0 tier).
+# After deploying, set the HANGOVA_MONGO_URI, HANGOVA_BOOKING_MONGO_URI, and
+# HANGOVA_INFO_MONGO_URI environment variables on each service with your
+# MongoDB Atlas connection string if you haven't already.
 
 services:
   # ---- Module 1: User & Admin -------------------------------------------
@@ -22,11 +22,14 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
+    docker:
+      buildArgs:
+        SERVICE_NAME: user-service
     envVars:
       - key: SERVER_PORT
         value: "8081"
       - key: HANGOVA_MONGO_URI
-        value: "mongodb+srv://lexurisachs_db_user:<F0d2EXI2loyowmMHd>@cluster0.zcpwxga.mongodb.net/hangova_users"
+        sync: false
       - key: HANGOVA_JWT_SECRET
         generateValue: true
       - key: HANGOVA_JWT_ISSUER
@@ -40,11 +43,14 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
+    docker:
+      buildArgs:
+        SERVICE_NAME: trip-service
     envVars:
       - key: SERVER_PORT
         value: "8082"
       - key: HANGOVA_MONGO_URI
-        value: "mongodb+srv://lexurisachs_db_user:<F0d2EXI2loyowmMHd>@cluster0.zcpwxga.mongodb.net/hangova_trips"
+        sync: false
       - key: HANGOVA_GEMINI_API_KEY
         sync: false
       - key: HANGOVA_GEMINI_MODEL
@@ -58,11 +64,14 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
+    docker:
+      buildArgs:
+        SERVICE_NAME: booking-service
     envVars:
       - key: SERVER_PORT
         value: "8083"
       - key: HANGOVA_BOOKING_MONGO_URI
-        value: "mongodb+srv://lexurisachs_db_user:<F0d2EXI2loyowmMHd>@cluster0.zcpwxga.mongodb.net/hangova_bookings"
+        sync: false
       - key: HANGOVA_TRIP_URL
         fromService: { name: hangova-trip, type: web, property: hostport }
       - key: HANGOVA_JWT_SECRET
@@ -76,11 +85,14 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
+    docker:
+      buildArgs:
+        SERVICE_NAME: info-service
     envVars:
       - key: SERVER_PORT
         value: "8084"
       - key: HANGOVA_INFO_MONGO_URI
-        value: "mongodb+srv://lexurisachs_db_user:<F0d2EXI2loyowmMHd>@cluster0.zcpwxga.mongodb.net/hangova_info"
+        sync: false
       - key: HANGOVA_TRIP_URL
         fromService: { name: hangova-trip, type: web, property: hostport }
       - key: HANGOVA_BOOKING_URL
@@ -96,6 +108,9 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /actuator/health
+    docker:
+      buildArgs:
+        SERVICE_NAME: api-gateway
     envVars:
       - key: SERVER_PORT
         value: "8080"
